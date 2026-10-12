@@ -123,6 +123,22 @@ main .note{margin:6px 0}
 .scr{flex:0 1 auto;min-height:0;overflow-y:auto}
 .prow{display:flex;gap:8px;margin:10px 0 14px}
 @media (max-height:660px){.prow{margin:6px 0 8px}}
+@media (min-width:768px){
+body .app{max-width:1040px;display:grid;grid-template-columns:220px minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:28px;padding:max(16px,env(safe-area-inset-top)) 28px 20px}
+.app>.top,.app>.demo{grid-column:1/-1}
+.app>.nav{grid-column:1;grid-row:3;position:static;transform:none;flex-direction:column;align-self:start;background:none;box-shadow:none;padding:0;border-radius:0;gap:4px;margin-top:8px}
+.app .nav a{width:auto;place-items:center start;padding:0 16px;color:var(--text);min-height:44px;border-radius:12px}
+.app .nav a[aria-current=page]{background:var(--surface);box-shadow:var(--sh)}
+.app>main{grid-column:2;grid-row:3;min-height:0}
+.flow{max-width:460px;max-height:720px;width:100%;margin:0 auto}
+main>section:not(.flow){max-width:640px;width:100%;margin:0 auto}
+dialog{margin:auto;border-radius:20px;max-width:440px}
+}
+@media (min-width:1100px){
+main>section.home{max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;align-content:start;align-items:start;grid-auto-flow:dense}
+.home>.hero,.home>.cta,.home>.chips{grid-column:1}
+.home>div[style],.home>.hd,.home>.list{grid-column:2}
+}
 .prow select{flex:1.2;min-width:0}
 .prow .btn{flex:1;width:auto}
 .toward{color:var(--muted);font-size:var(--fs-sup);text-align:center}
@@ -157,7 +173,7 @@ function quick(go){return [['Full',S.due],['Half',Math.round(S.due/2)],['10,000'
 
 var main=document.getElementById('main'),dlg=document.getElementById('dlg'),secs={},ups=[];
 var dueEl=h('div',{class:'bal'}),dueMeta=h('p',{class:'cur'}),homeDev=h('div',{style:'margin-top:8px'}),homeQ=h('div',{class:'chips',role:'group','aria-label':'Quick amounts'}),recent=h('ul',{class:'list'}),all=h('ul',{class:'list scr'}),empty=h('p',{class:'empty'},'No payments yet. Pay an installment and it will appear here.'),devBox=h('div'),devStat=h('p',{class:'note'}),devBtn=h('button',{class:'btn sec',type:'button'});
-secs.home=h('section',{hidden:''},h('h1',{class:'sr',tabindex:'-1'},'Home'),h('div',{class:'hero'},h('p',{class:'lbl'},'Amount due this month (demo)'),dueEl,dueMeta),
+secs.home=h('section',{hidden:'',class:'home'},h('h1',{class:'sr',tabindex:'-1'},'Home'),h('div',{class:'hero'},h('p',{class:'lbl'},'Amount due this month (demo)'),dueEl,dueMeta),
  h('a',{class:'cta',href:'#pay'},ico('<path d="M3 7h18v10H3zM3 11h18"/>'),h('span',{class:'ct'},h('b',{},'Pay installment'),h('small',{},'Toward your '+S.dev.cat))),
  homeQ,homeDev,
  h('div',{class:'hd'},h('h2',{},'Recent'),h('a',{class:'lnk',href:'#activity'},'See all')),recent);
