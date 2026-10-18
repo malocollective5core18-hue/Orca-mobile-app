@@ -122,7 +122,25 @@ dialog::backdrop{background:rgba(0,0,0,.55)}
 main .note{margin:6px 0}
 .scr{flex:0 1 auto;min-height:0;overflow-y:auto}
 .prow{display:flex;gap:8px;margin:10px 0 14px}
+#link-code{letter-spacing:.12em}
 @media (max-height:660px){.prow{margin:6px 0 8px}}
+@media (max-height:660px) and (max-width:767px){
+.app{padding-bottom:calc(64px + env(safe-area-inset-bottom))}
+.nav{bottom:calc(8px + env(safe-area-inset-bottom))}
+.app .nav a{min-height:40px}
+.gb{min-height:36px}
+.demo{padding:4px 10px;margin-top:6px}
+.bal{font-size:clamp(1.75rem,8vw,2.25rem)}
+.hero{margin:4px 0 6px}
+.cta{min-height:48px}
+.dev{padding:10px}
+.tx{padding:6px 0}
+.pad{grid-template-rows:repeat(4,clamp(36px,6dvh,44px))}
+.form{gap:6px}
+.amtw .big{height:clamp(40px,8dvh,52px)}
+.ttl{margin:0 0 6px}
+.dv div{padding:5px 0}
+}
 @media (min-width:768px){
 body .app{max-width:1040px;display:grid;grid-template-columns:220px minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);column-gap:28px;padding:max(16px,env(safe-area-inset-top)) 28px 20px}
 .app>.top,.app>.demo{grid-column:1/-1}
@@ -158,7 +176,7 @@ main>section.home{max-width:none;display:grid;grid-template-columns:1fr 1fr;gap:
 </div>
 <script>
 function seed(){return[{n:'Installment',w:'5 Oct',a:62000,k:'pay',s:'Sample · M-Pesa'},{n:'Installment',w:'12 Sep',a:100000,k:'pay',s:'Sample · M-Pesa'},{n:'Installment',w:'12 Aug',a:100000,k:'pay',s:'Sample · Bank transfer'},{n:'Installment',w:'12 Jul',a:100000,k:'pay',s:'Sample · M-Pesa'},{n:'Installment',w:'12 Jun',a:100000,k:'pay',s:'Sample · M-Pesa'}]}
-function fresh(){return{busy:false,hide:false,due:38000,dev:{name:'Hisense 55" Smart TV',cat:'Smart TV',total:1200000,paid:462000,monthly:100000,next:'28 Oct',status:'active'},txs:seed()}}
+function fresh(){return{busy:false,hide:false,tvLinked:false,due:38000,dev:{name:'Hisense 55" Smart TV',cat:'Smart TV',total:1200000,paid:462000,monthly:100000,next:'28 Oct',status:'active'},txs:seed()}}
 var S=fresh(),FX={};
 var fmt=function(n){return n.toLocaleString('en-US')};
 var rem=function(){return S.dev.total-S.dev.paid};
@@ -172,12 +190,12 @@ function devCard(){var d=S.dev;return h('div',{class:'dev'},h('div',{class:'dh'}
 function quick(go){return [['Full',S.due],['Half',Math.round(S.due/2)],['10,000',10000]].filter(function(q,i){return q[1]>0&&q[1]<=rem()&&(i===2||S.due>0)}).map(function(q){return h('button',{type:'button',class:'chip',onclick:function(){go(q[1])}},(q[0]==='10,000'?'':q[0]+' ')+fmt(q[1]))})}
 
 var main=document.getElementById('main'),dlg=document.getElementById('dlg'),secs={},ups=[];
-var dueEl=h('div',{class:'bal'}),dueMeta=h('p',{class:'cur'}),homeDev=h('div',{style:'margin-top:8px'}),homeQ=h('div',{class:'chips',role:'group','aria-label':'Quick amounts'}),recent=h('ul',{class:'list'}),all=h('ul',{class:'list scr'}),empty=h('p',{class:'empty'},'No payments yet. Pay an installment and it will appear here.'),devBox=h('div'),devStat=h('p',{class:'note'}),devBtn=h('button',{class:'btn sec',type:'button'});
+var dueEl=h('div',{class:'bal'}),dueMeta=h('p',{class:'cur'}),homeDev=h('div',{style:'margin-top:8px'}),homeQ=h('div',{class:'chips',role:'group','aria-label':'Quick amounts'}),recent=h('ul',{class:'list'}),all=h('ul',{class:'list scr'}),empty=h('p',{class:'empty'},'No payments yet. Pay an installment and it will appear here.'),devBox=h('div'),devStat=h('p',{class:'note'}),devBtn=h('button',{class:'btn sec',type:'button'}),linkBtn=h('a',{class:'btn',href:'#link',style:'display:grid;place-items:center;text-decoration:none'},'Link TV');
 secs.home=h('section',{hidden:'',class:'home'},h('h1',{class:'sr',tabindex:'-1'},'Home'),h('div',{class:'hero'},h('p',{class:'lbl'},'Amount due this month (demo)'),dueEl,dueMeta),
  h('a',{class:'cta',href:'#pay'},ico('<path d="M3 7h18v10H3zM3 11h18"/>'),h('span',{class:'ct'},h('b',{},'Pay installment'),h('small',{},'Toward your '+S.dev.cat))),
  homeQ,homeDev,
  h('div',{class:'hd'},h('h2',{},'Recent'),h('a',{class:'lnk',href:'#activity'},'See all')),recent);
-secs.device=h('section',{hidden:''},h('h1',{class:'ttl',tabindex:'-1'},'My device'),devBox,devStat,devBtn,h('p',{class:'note'},'Demo only: ORCA Cloud decides the real status.'));
+secs.device=h('section',{hidden:''},h('h1',{class:'ttl',tabindex:'-1'},'My device'),devBox,devStat,h('div',{class:'row2'},linkBtn,devBtn),h('p',{class:'note'},'Demo only: ORCA Cloud decides the real status.'));
 secs.activity=h('section',{hidden:'',class:'flow'},h('h1',{class:'ttl',tabindex:'-1'},'Payment history'),all,empty,h('div',{class:'row2'},h('button',{class:'btn sec',type:'button',onclick:function(){Object.assign(S,fresh(),{hide:S.hide});render()}},'Reset demo')));
 devBtn.onclick=function(){S.dev.status=S.dev.status==='active'?'restricted':'active';render()};
 
@@ -207,6 +225,23 @@ devBtn.onclick=function(){S.dev.status=S.dev.status==='active'?'restricted':'act
   secs.pay=h('section',{hidden:'',class:'flow'},h('div',{class:'fh'},h('a',{class:'back',href:'#home'},'\u2190 Back'),h('h1',{class:'ttl',tabindex:'-1'},'Pay installment')),form,msg);
 })();
 
+(function(){
+  var inp=h('input',{id:'link-code',type:'text',inputmode:'none',autocomplete:'off',placeholder:'000 000',class:'big','aria-describedby':'link-e'}),er=h('p',{class:'err',id:'link-e'}),pre=h('p',{class:'pre'}),msg=h('p',{class:'msg',role:'status'}),form=h('form',{novalidate:'',class:'form'});
+  var digs=function(){return inp.value.replace(/\D/g,'')};
+  function chk(){var d=digs(),m=d.length===0?'Enter the 6-digit code shown on your TV.':d.length<6?'The code has 6 digits. You entered '+d.length+'.':'';er.textContent=m?'Error: '+m:'';if(m)inp.setAttribute('aria-invalid','true');else inp.removeAttribute('aria-invalid');return m}
+  inp.addEventListener('input',function(){var d=digs().slice(0,6);inp.value=d.length>3?d.slice(0,3)+' '+d.slice(3):d;msg.textContent='';if(inp.getAttribute('aria-invalid'))chk();pre.textContent=d.length===6?'Demo: any 6-digit code works.':''});
+  var pad=h('div',{class:'pad'},['1','2','3','4','5','6','7','8','9','','0','\u232b'].map(function(k){return k===''?h('span',{'aria-hidden':'true'}):h('button',{type:'button','aria-label':k==='\u232b'?'Delete':k,onclick:function(){var d=digs(),v=k==='\u232b'?d.slice(0,-1):d+k;inp.value=v;inp.dispatchEvent(new Event('input'))}},k)}));
+  form.append(h('div',{class:'amtw'},h('label',{for:'link-code'},'Activation code shown on your TV'),inp,er),pad,pre,h('div',{class:'prow'},h('button',{class:'btn',type:'submit'},'Link TV')));
+  form.addEventListener('submit',function(e){e.preventDefault();if(S.busy)return;if(chk()){msg.className='msg';msg.textContent='Fix the code to continue.';inp.focus();return}review()});
+  function review(){var dl=h('dl',{class:'sum'});function r(k,v,b){dl.append(h('div',{class:b?'tot':''},h('dt',{},k),h('dd',{},v)))}
+    r('Activation code',inp.value,1);r('Appliance',S.dev.name);
+    var ok=h('button',{class:'btn',type:'button'},'Confirm demo'),no=h('button',{class:'btn sec',type:'button',onclick:function(){dlg.close();msg.className='msg';msg.textContent='Cancelled. Your TV was not linked.'}},'Cancel');
+    ok.addEventListener('click',function(){if(S.busy)return;S.busy=true;ok.disabled=no.disabled=true;ok.textContent='Processing demo…';
+      setTimeout(function(){S.tvLinked=true;S.busy=false;form.reset();er.textContent='';inp.removeAttribute('aria-invalid');pre.textContent='';dlg.close();render();msg.className='msg ok';msg.textContent='Demo: TV linked. No real TV was connected.'},900)});
+    dlg.replaceChildren(h('h2',{id:'dt'},'Review: Link TV'),h('p',{class:'note'},'Demo link. No real TV will be connected.'),dl,h('div',{class:'row2'},no,ok));dlg.showModal()}
+  secs.link=h('section',{hidden:'',class:'flow'},h('div',{class:'fh'},h('a',{class:'back',href:'#device'},'\u2190 Back'),h('h1',{class:'ttl',tabindex:'-1'},'Link TV')),form,msg);
+})();
+
 function render(){
   dueEl.textContent=S.hide?'••••••':fmt(S.due);dueEl.setAttribute('aria-label',S.hide?'Amount hidden':fmt(S.due)+' Tanzanian shillings due');
   dueMeta.textContent='TZS · '+(rem()===0?'Fully paid':S.due===0?'Paid, next due '+S.dev.next:'due '+S.dev.next);
@@ -214,15 +249,15 @@ function render(){
   recent.replaceChildren.apply(recent,S.txs.slice(0,2).map(row));all.replaceChildren.apply(all,S.txs.map(row));all.hidden=recent.hidden=!S.txs.length;empty.hidden=!!S.txs.length;
   var d=S.dev,dv=h('dl',{class:'sum dv'});[['Total price',fmt(d.total)+' TZS'],['Paid so far',fmt(d.paid)+' TZS'],['Remaining',fmt(rem())+' TZS'],['Monthly installment',fmt(d.monthly)+' TZS'],['Next due',d.next],['Payments left',String(left())]].forEach(function(r){dv.append(h('div',{},h('dt',{},r[0]),h('dd',{},r[1])))});
   devBox.replaceChildren(devCard(),dv);
-  devStat.textContent=d.status==='active'?'Your device is Active and works normally.':'Your device is Restricted until the amount due is paid.';
+  devStat.textContent=(d.status==='active'?'Your device is Active and works normally.':'Your device is Restricted until the amount due is paid.')+(S.tvLinked?' TV linked (demo).':' TV not linked yet.');
   devBtn.textContent=d.status==='active'?'Demo: simulate overdue':'Demo: simulate paid up';
   ups.forEach(function(f){f()});
 }
 dlg.addEventListener('cancel',function(e){if(S.busy)e.preventDefault()});
-['home','pay','device','activity'].forEach(function(k){main.append(secs[k])});
+['home','pay','device','link','activity'].forEach(function(k){main.append(secs[k])});
 function route(first){var r=location.hash.slice(1);if(!secs[r])r='home';
   for(var k in secs)secs[k].hidden=k!==r;
-  document.querySelectorAll('.nav a').forEach(function(a){if(a.getAttribute('href')==='#'+r)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  document.querySelectorAll('.nav a').forEach(function(a){if(a.getAttribute('href')==='#'+(r==='link'?'device':r))a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
   var hd=secs[r].querySelector('h1');document.title=hd.textContent+' · ORCA';if(!first){hd.focus({preventScroll:true});window.scrollTo(0,0)}}
 window.addEventListener('hashchange',function(){route()});
 var hb=document.getElementById('hide');hb.onclick=function(){S.hide=!S.hide;hb.setAttribute('aria-pressed',S.hide);hb.textContent=S.hide?'Show amount':'Hide amount';render()};
